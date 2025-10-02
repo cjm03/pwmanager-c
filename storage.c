@@ -1,4 +1,14 @@
-#include "manager.h"
+/*----------------------------------
+ *      storage.c
+ *  
+ *      Hash Table for user info
+------------------------------------*/
+
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
 #include "storage.h"
 
 int storageHash(const char* s, const int a, const int m)
@@ -12,11 +22,11 @@ int storageHash(const char* s, const int a, const int m)
     return (int)hash;
 }
 
-int storageGetHash(const char* s, const int items, const int attempt)
+int storageGetHash(const char* s, const int users, const int attempt)
 {
-    const int hasha = storageHash(s, HT_PRIME1, items);
-    const int hashb = storageHash(s, HT_PRIME2, items);
-    return (hasha + (attempt * (hashb + 1))) % items;
+    const int hasha = storageHash(s, HT_PRIME1, users);
+    const int hashb = storageHash(s, HT_PRIME2, users);
+    return (hasha + (attempt * (hashb + 1))) % users;
 }
 
 uTable* createTable(void)
