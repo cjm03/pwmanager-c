@@ -15,4 +15,10 @@ char* verifyArgon(uint8_t* password, uint8_t* salt);
 
 int verifyEncodedArgon(char* encoded);
 
+int loadStore(uTable* ut, const char* filepath);
+
+void storeNewUser(uTable* ut, const char* filename, char* username, char* password);
+
+int loginAsUser(uTable* ut, char* username, char* password);
+
 #endif // MANAGER_H
