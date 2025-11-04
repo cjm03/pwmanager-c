@@ -2,9 +2,20 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-
 #include "pwgen.h"
 #include "storage.h"
+
+/* 
+ * Program starts by initializing the "Deck" responsible for storing the "Cards" containing the data i'm trying to manage. I load the example data
+ * from the function under main, which generates 16 passwords, creates 16 Cards with the passwords, inserts them into the Deck, and then frees the
+ * temporary pointers. Then, I declare that the Deck is unlocked and allocate 64 characters to the key which the user must populate with a strong
+ * master key in order to lock/unlock the Deck. Next a while loop keeps the program running and provides a few options. Adding a new entry works,
+ * but I don't like the way that it feels so I will work on that in the near future. Find a password simply queries the Deck, asking if any card 
+ * has the same nickname that the user is searching for. Dump entries = dump entries to stdout. Locking verifies that the Deck isn't already locked,
+ * and requires the user to enter the master key before XORing each character of each password with the corresponding character of the master key.
+ * This is not future proof, and 100% relies on each Card having a password that is shorter than the length of the master key. Unlocking operates in
+ * the exact same way.
+*/
 
 void loadTest(CardDeck* cd);
 
@@ -13,14 +24,13 @@ int main(void)
     srand(time(NULL));
     CardDeck* cd = createCardDeck();
     loadTest(cd);
-    char* zpwd = genDashedPassword(32);
-    insertUserCard(cd, "zipp", "www.zipp.com", "ziggy03", zpwd);
-    free(zpwd);
     int choice;
+    int locked = 0;
     char* key = malloc(64 * sizeof(char));
+
     printf("Initialize the master key (48-63 chars): ");
     scanf("%s", key);
-    int locked = 0;
+
     while (1) {
         printf("\n--- PWM ---\n");
         printf("    1. Add new entry\n");
@@ -32,8 +42,8 @@ int main(void)
         printf("> ");
         scanf("%d", &choice);
 
-        if (choice == 1) {
-            char* n = malloc(16 * sizeof(char));
+/* 1 */ if (choice == 1) {
+            char* n = malloc(16 * sizeof(char));    // This all feels highly unoptimized
             char* w = malloc(32 * sizeof(char));
             char* u = malloc(16 * sizeof(char));
             char* p = malloc(48 * sizeof(char));
@@ -64,17 +74,26 @@ int main(void)
                 free(u);
                 free(p);
             }
-        } else if (choice == 2) {
+/* 2 */ } else if (choice == 2) {
+
             char* n = malloc(16 * sizeof(char));
             printf("Enter service nickname: ");
             scanf("%s", n);
             UserCard* uc = findPassWithNickname(cd, n);
-            if (uc) printf("%s:\n  u: %s\n  p: %s\n", n, uc->username, uc->password);
-            else printf("Could not find an entry for %s\n", n);
+
+            if (uc) {
+                printf("%s:\n  u: %s\n  p: %s\n", n, uc->username, uc->password);
+            } else {
+                printf("Could not find an entry for %s\n", n);
+            }
             free(n);
-        } else if (choice == 3) {
+
+/* 3 */ } else if (choice == 3) {
+
             dumpCardDeck(cd);
-        } else if (choice == 4) {
+
+/* 4 */ } else if (choice == 4) {
+
             if (locked == 1) {
                 printf("Shit already locked...?\n");
             } else {
@@ -91,7 +110,8 @@ int main(void)
                     printf("WRONG!!!\n");
                 }
             }
-        } else if (choice == 5) {
+/* 5 */ } else if (choice == 5) {
+
             if (locked == 0) {
                 printf("Shit aint even locked...?\n");
             } else {
@@ -108,9 +128,11 @@ int main(void)
                     printf("WRONG!!!\n");
                 }
             }
-        } else if (choice == 6) {
+/* 6 */ } else if (choice == 6) {
+
             printf("BYE!\n");
             break;
+
         } else {
             printf("unsupported, I suggest reading the options\n");
             break;
