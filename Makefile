@@ -1,17 +1,17 @@
 # Makefile
 CC=gcc
-CFLAGS=-g -O2 -Wall -pedantic -lssl -lcrypto -std=c99
+CFLAGS=-g -O2 -Wall -pedantic -I/include -lssl -lcrypto -std=c99
 TARGET=pwm
-SRC=manager.c pwgen.c storage.c utility.c
+SRC=src/manager.c src/pwgen.c src/storage.c src/utility.c
 
 #Default Target
 all: clean build
 
 pwgen:
-	$(CC) cli-gen.c pwgen.c $(CFLAGS) -o pwgen
+	$(CC) src/cli-gen.c src/pwgen.c $(CFLAGS) -o pwgen
 
 test:
-	$(CC) test.c pwgen.c storage.c utility.c $(CFLAGS) -o test
+	$(CC) src/test.c src/pwgen.c src/storage.c src/utility.c $(CFLAGS) -o test
 
 build:
 	@echo "Compiling $(TARGET)..."

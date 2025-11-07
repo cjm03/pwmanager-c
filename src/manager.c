@@ -5,13 +5,31 @@
 #include "central.h"
 
 /* 
- * Program starts by initializing the "Deck" responsible for storing the "Cards" containing the data i'm trying to manage. I load the example data
- * from the function under main, which generates 16 passwords, creates 16 Cards with the passwords, inserts them into the Deck, and then frees the
- * temporary pointers. Then, I declare that the Deck is unlocked and allocate 64 characters to the key which the user must populate with a strong
- * master key in order to lock/unlock the Deck. Next a while loop keeps the program running and provides a few options. Adding a new entry works,
- * but I don't like the way that it feels so I will work on that in the near future. Find a password simply queries the Deck, asking if any card 
- * has the same nickname that the user is searching for. Dump entries = dump entries to stdout. Locking verifies that the Deck isn't already locked,
- * and requires the user to enter the master key before XORing each character of each password with the corresponding character of the master key.
+ * Program starts by initializing a "Deck" responsible for storing "Cards" containing the data i'm trying to manage. 
+ * Next the user must enter a master key which is used to encrypt/decrypt the passwords stored in the cards.
+ * A while loop then continuously waits for the user to input an integer representing the action they would like to perform.
+ *      1. Add new entry
+ *          - This gets a nickname, website, and username from the user. Then the user is asked if they would like to generate
+ *            a password or input their own password. The data is then inserted into the deck as a new card.
+ *      2. Find a password
+ *          - This queries the deck and returns a card assuming the nickname requested exists within the deck.
+ *      3. Dump the entries
+ *          - Prints all cards in the deck and all the data they contain
+ *      4. Lock the deck
+ *          - Ensures deck is unlocked, prompts for master key, then encrypts each password in the deck.
+ *      5. Unlock the deck
+ *          - Same as lock but ensures deck is locked, and decrypts rather than encrypt.
+ *      6. Generate and print a new password
+ *          - Prompts user for desired length and whether the type should be Simple or Dashed. Prints password to stdout.
+ *      7. Save the deck to a file
+ *          - Attempts to open the provided filename, and if successful, overwrites the file with the current deck.
+ *      8. Load a deck from a file
+ *          - Attempts to open the file, then parses each card entry and calls the card insertion function (insertUserCard)
+ *      9. Print general info about the current deck
+ *          - Prints current count, max capacity, locked state, and all the service nicknames.
+ *      0. Quit
+ * Locking verifies that the Deck isn't already locked, and requires the user to enter the master key before XORing each character 
+ * of each password with the corresponding character of the master key.
  * This is not future proof, and 100% relies on each Card having a password that is shorter than the length of the master key. Unlocking operates in
  * the exact same way.
 */
