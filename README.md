@@ -10,6 +10,11 @@ It is also important to note that when loading a deck from file, locking it, and
 it is possible that unlocking the locked file will produce passwords that do not match what they were prior to encryption.
 Check your encoding. 
 
+## Memory
+I am not well-versed in securing the memory of programs, but after many many many runs using valgrind, it appears that all
+allocated memory is properly freed when using the program as intended. However, I have made no attempts to attack the program 
+and reach data that should not be reachable. Use at your own risk!
+
 ## Usage
 ### pwgen
 `make pwgen` will compile the simple command-line password generator. Running the program with no arguments will
