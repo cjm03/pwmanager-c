@@ -25,8 +25,6 @@ CardDeck* createCardDeck(void);
 
 void insertUserCard(CardDeck* cd, char* nickname, char* website, char* username, char* password);
 
-void insertPremadeUserCard(CardDeck* cd, UserCard* uc);
-
 void freeUserCard(UserCard* uc);
 
 void freeCardDeck(CardDeck* cd);

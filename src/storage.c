@@ -61,13 +61,6 @@ void insertUserCard(CardDeck* cd, char* nickname, char* website, char* username,
     cd->count++;
 }
 
-void insertPremadeUserCard(CardDeck* cd, UserCard* uc)
-{
-    UserCard* new = uc;
-    cd->cards[cd->count] = new;
-    cd->count++;
-}
-
 void freeUserCard(UserCard* uc)
 {
     free(uc->service_nickname);
