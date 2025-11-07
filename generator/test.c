@@ -28,6 +28,11 @@ int main(void)
     int locked = 0;
     char* key = malloc(64 * sizeof(char));
 
+    printf("\033[1;32m   _____ _____ _____     _____ _ _ _ \033[0m\n");
+    printf("\033[1;32m  |   __|   __|   | |___|  _  | | | |\033[0m\n");
+    printf("\033[1;32m  |  |  |   __| | | |___|   __| | | |\033[0m\n");
+    printf("\033[1;32m  |_____|_____|_|___|   |__|  |_____|\033[0m\n\n");
+
     printf("Initialize the master key (48-63 chars): ");
     scanf("%s", key);
 
@@ -38,7 +43,9 @@ int main(void)
         printf("    3. Dump the entries\n");
         printf("    4. Lock the deck\n");
         printf("    5. Unlock the deck\n");
-        printf("    6. Quit\n\n");
+        printf("    6. Generate and print a new password\n");
+        // TODO: printf("    7. Save the deck to a file\n");
+        printf("    7. Quit\n\n");
         printf("> ");
         scanf("%d", &choice);
 
@@ -129,6 +136,31 @@ int main(void)
                 }
             }
 /* 6 */ } else if (choice == 6) {
+
+            int desiredLength = 16;
+            int desiredType = 0;
+            char* pwd = malloc(64 * sizeof(char));
+            printf("Enter desired length (>=16 recommended): ");
+            scanf("%d", &desiredLength);
+            printf("Enter 1 for simple or 2 for dashed: ");
+            scanf("%d", &desiredType);
+            if (desiredLength <= 0 || desiredLength >= 64) desiredLength = 16;
+            if (desiredType == 1) {
+                printf("\033[1;32m\nGenerating SIMPLE %d-character password...\n\033[0m", desiredLength);
+                pwd = genSimplePassword(desiredLength);
+                printf("\n    \033[1;35mResult: \033[1;91m%s\n\033[0m\n", pwd);
+            } else if (desiredType == 2) {
+                printf("\033[1;32m\nGenerating DASHED %d-character password...\n\033[0m", desiredLength);
+                pwd = genDashedPassword(desiredLength);
+                printf("\n    \033[1;35mResult: \033[1;91m%s\n\033[0m\n", pwd);
+            } else {
+                printf("\033[1;32m\nGenerating SIMPLE %d-character password...\n\033[0m", desiredLength);
+                pwd = genSimplePassword(desiredLength);
+                printf("\n    \033[1;35mResult: \033[1;91m%s\n\033[0m\n", pwd);
+            }
+            free(pwd);
+
+/* 7 */ } else if (choice == 7) {
 
             printf("BYE!\n");
             break;
