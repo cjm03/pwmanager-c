@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <openssl/core.h>
 #include <openssl/rand.h>
 #include <openssl/provider.h>
@@ -13,7 +12,6 @@
 #include <openssl/evp.h>
 #include <openssl/bio.h>
 
-// const char all[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*_+<.>-?";
 
 char genCharacter(void)
 {

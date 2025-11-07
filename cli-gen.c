@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <crypt.h>
-#include "pwgen.h"
+#include "central.h"
 
 
 int main(int argc, char** argv)

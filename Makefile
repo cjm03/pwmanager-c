@@ -1,9 +1,28 @@
 # Makefile
-CC=clang
-CFLAGS=-lcrypto -lssl -lm -D_DEFAULT_SOURCE -O2 -Wall -pedantic -std=c99
-ARGON=libargon2/libargon2.a
-MAC=-I/opt/homebrew/opt/openssl/include -L/opt/homebrew/opt/openssl/lib
-manager:
-	$(CC) manager.c storage.c $(ARGON) -Isrc $(MAC) $(CFLAGS) -o manager
+CC=gcc
+CFLAGS=-g -O2 -Wall -pedantic -lssl -lcrypto -std=c99
+TARGET=pwm
+SRC=manager.c pwgen.c storage.c utility.c
+
+#Default Target
+all: clean build
+
+pwgen:
+	$(CC) cli-gen.c pwgen.c $(CFLAGS) -o pwgen
+
+test:
+	$(CC) test.c pwgen.c storage.c utility.c $(CFLAGS) -o test
+
+build:
+	@echo "Compiling $(TARGET)..."
+	$(CC) $(SRC) $(CFLAGS) -o $(TARGET)
+	@echo "Build complete"
+
 clean:
-	rm manager
+	@echo "Checking for existing binary..."
+	@if [ -f $(TARGET) ]; then \
+		echo "Removing old binary $(TARGET)..."; \
+		rm -f $(TARGET); \
+	else \
+		echo "No existing binary found"; \
+	fi

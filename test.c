@@ -2,8 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include "pwgen.h"
-#include "storage.h"
+#include "central.h"
 
 /* 
  * Program starts by initializing the "Deck" responsible for storing the "Cards" containing the data i'm trying to manage. I load the example data
@@ -53,42 +52,39 @@ int main(void)
 
 // Add a New Entry
 /* 1 */ if (choice == 1) {
-            char* n = malloc(16 * sizeof(char));    // This all feels highly unoptimized
-            char* w = malloc(32 * sizeof(char));
-            char* u = malloc(16 * sizeof(char));
-            char* p = malloc(48 * sizeof(char));
+            UserCard* card = createEmptyUserCard();
             int gen = 0;
             printf("Nickname: ");
-            scanf("%s", n);
+            scanf("%s", card->service_nickname);
             printf("Website: ");
-            scanf(" %s", w);
+            scanf(" %s", card->service_website);
             printf("Username: ");
-            scanf(" %s", u);
+            scanf(" %s", card->username);
             printf("Generate a password? (0) or provide your own (1): ");
             scanf(" %d", &gen);
             if (gen == 0) {
-                p = genDashedPassword(20);
-                insertUserCard(cd, n, w, u, p);
-                printf("%s:\n  website: %s\n  username: %s\n  password: %s\n", n, w, u, p);
-                free(n);
-                free(w);
-                free(u);
-                free(p);
+                int len = 16;
+                int type = 0;
+                printf("Enter desired password length: ");
+                scanf("%d", &len);
+                printf("Simple (1) or Dashed (2)?: ");
+                scanf("%d", &type);
+                if (type == 1) card->password = genSimplePassword(len);
+                else card->password = genDashedPassword(len);
+                insertUserCard(cd, card->service_nickname, card->service_website, card->username, card->password);
+                printf("%s:\n  website: %s\n  username: %s\n  password: %s\n", card->service_nickname, card->service_website, card->username, card->password);
             } else {
                 printf("Enter password: ");
-                scanf(" %s", p);
-                insertUserCard(cd, n, w, u, p);
-                printf("%s:\n  website: %s\n  username: %s\n  password: %s\n", n, w, u, p);
-                free(n);
-                free(w);
-                free(u);
-                free(p);
+                scanf(" %s", card->password);
+                insertUserCard(cd, card->service_nickname, card->service_website, card->username, card->password);
+                printf("%s:\n  website: %s\n  username: %s\n  password: %s\n", card->service_nickname, card->service_website, card->username, card->password);
             }
+            freeUserCard(card);
 
 // Find a Specific Entry
 /* 2 */ } else if (choice == 2) {
 
-            char* n = malloc(16 * sizeof(char));
+            char* n = malloc(16 * sizeof(char));                                // ALLOC: n
             printf("Enter service nickname: ");
             scanf("%s", n);
             UserCard* uc = findPassWithNickname(cd, n);
@@ -98,7 +94,7 @@ int main(void)
             } else {
                 printf("Could not find an entry for %s\n", n);
             }
-            free(n);
+            free(n);                                                            // FREE: n
 
 // Dump Table Entries
 /* 3 */ } else if (choice == 3) {
@@ -111,17 +107,16 @@ int main(void)
             if (cd->locked == 1) {
                 printf("Shit already locked...?\n");
             } else {
-                char* attempt = malloc(64 * sizeof(char));
+                char* attempt = malloc(64 * sizeof(char));          // ALLOC: attempt
                 printf("Enter master key: ");
                 scanf("%s", attempt);
                 if (strcmp(key, attempt) == 0) {
                     lockCardDeck(cd, attempt);
                     printf("Deck locked\n");
-                    free(attempt);
                 } else {
-                    free(attempt);
                     printf("WRONG!!!\n");
                 }
+                free(attempt);                                      // FREE: attempt
             }
 
 // Unlock Deck
@@ -130,17 +125,16 @@ int main(void)
             if (cd->locked == 0) {
                 printf("Shit aint even locked...?\n");
             } else {
-                char* attempt = malloc(64 * sizeof(char));
+                char* attempt = malloc(64 * sizeof(char));          // ALLOC: attempt
                 printf("Enter master key: ");
                 scanf("%s", attempt);
                 if (strcmp(key, attempt) == 0) {
                     unlockCardDeck(cd, attempt);
                     printf("Deck unlocked\n");
-                    free(attempt);
                 } else {
-                    free(attempt);
-                    printf("WRONG!!!\n");
+                    printf("ERROR: master key incorrect\n");
                 }
+                free(attempt);                                      // FREE: attempt
             }
 
 // Output Generated Password
@@ -148,7 +142,7 @@ int main(void)
 
             int desiredLength = 16;
             int desiredType = 0;
-            char* pwd = malloc(64 * sizeof(char));
+            char* pwd = malloc(64 * sizeof(char));                          // ALLOC: pwd
             printf("Enter desired length (>=16 recommended): ");
             scanf("%d", &desiredLength);
             printf("Enter 1 for simple or 2 for dashed: ");
@@ -167,12 +161,12 @@ int main(void)
                 pwd = genSimplePassword(desiredLength);
                 printf("\n    \033[1;35mResult: \033[1;91m%s\n\033[0m\n", pwd);
             }
-            free(pwd);
+            free(pwd);                                                      // FREE: pwd
 
 // Save Deck To File
 /* 7 */ } else if (choice == 7) {
 
-            char* filename = malloc(32 * sizeof(char));
+            char* filename = malloc(32 * sizeof(char));         // ALLOC: filename
             printf("Enter name of file to save to: ");
             scanf("%s", filename);
             int ret = saveDeckToFile(cd, filename);
@@ -181,12 +175,12 @@ int main(void)
                 free(filename);
                 break;
             }
-            free(filename);
+            free(filename);                                     // FREE: filename
 
 // Load Deck From File
 /* 8 */ } else if (choice == 8) {
             
-            char* filename = malloc(32 * sizeof(char));
+            char* filename = malloc(32 * sizeof(char));         // ALLOC: filename
             printf("Enter name of file to read from: ");
             scanf("%s", filename);
             int ret = readDeckFromFile(cd, filename);
@@ -195,12 +189,13 @@ int main(void)
                 free(filename);
                 break;
             }
-            free(filename);
             if (cd->locked == 1) {
-                printf("WARNING: THIS DECK IS CURRENTLY LOCKED & ENCRYPTED\n");
+                printf("loaded deck from %s\n", filename);
+                printf("WARNING: DECK IS LOCKED & ENCRYPTED\n");
             } else {
-                printf("Loaded unlocked deck successfully!\n");
+                printf("loaded deck from %s\n", filename);
             }
+            free(filename);                                     // FREE: filename
 
         } else if (choice == 9) {
 

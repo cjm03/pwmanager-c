@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "utility.h"
+#include "central.h"
 
 int getSizeOfFile(char* filename)
 {

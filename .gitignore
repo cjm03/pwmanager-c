@@ -1,8 +1,12 @@
-libargon2/
 manager
 test
+pwm
 .clangd
 store.txt
 *.txt
-generator/pwgen
-generator/test
+bak-storage.c
+store.txt
+store.txt.enc
+new.txt
+new.txt.enc
+
