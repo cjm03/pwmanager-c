@@ -9,8 +9,15 @@ This is due to the character representations being altered when reading/writing 
 known issues when reading/writing a plaintext deck file since all characters are within a-zA-Z0-9!@#$_-
 
 ## Usage
+### pwgen
 `make pwgen` will compile the simple command-line password generator. Running the program with no arguments will
 execute it in interactive mode. Alternatively, 
 1. `./pwgen -n <LENGTH>` will output a simple password of provided length. 
 2. `./pwgen -n <LENGTH> [-d or -s]` will output either a dashed (-d) or simple (-s) password of provided length.
 3. `./pwgen -n <LENGTH> [-d or -s] -h` will do the same as above with the addition of the generated password's SHA3-256 hash.
+### test
+`make test` will compile the password manager with the testing function loadTest, which inserts 16 example cards into the deck.
+### pwm
+`make` will check for existing binary and remove it if it exists, and compile the password manager program which may be executed 
+with `./pwm`. `make build` will simply build the binary without checking for an already existing one. `make clean` will check for
+and remove the binary if it exists.
