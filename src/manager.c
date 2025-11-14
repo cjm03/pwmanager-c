@@ -53,6 +53,7 @@ int main(void)
     printf("Initialize the master key (48-63 chars): ");
     scanf("%s", key);
 
+
     while (1) {
         printf("\nOptions:\n");
         printf("    1. Add new entry\n");
@@ -60,10 +61,10 @@ int main(void)
         printf("    3. Dump the entries\n");
         printf("    4. Lock the deck\n");
         printf("    5. Unlock the deck\n");
-        printf("    6. Generate and print a new password\n");
+        printf("    6. Delete an entry\n");
         printf("    7. Save the deck to a file\n");
         printf("    8. Load a deck from a file\n");
-        printf("    9. Print general info about the deck\n");
+        printf("    9. Unload a deck from Memory\n");
         printf("    0. Quit\n\n");
         printf("> ");
         scanf("%d", &choice);
@@ -73,8 +74,17 @@ int main(void)
     ////////////////////
         if (choice == 1) {
 
-            UserCard* card = CreateHashEmptyUserCard(&arena);
+            size_t cmark = ArenaGetMarker(&STRS);
+            printf("%zu\n", cmark);
+            UserCard* card = CreateHashEmptyUserCard(&STRS);
+            size_t emark = ArenaGetMarker(&arena);
+            printf("%zu\n", emark);
             uAddNewUserEntry(&arena, cd, card);
+            printf("offset prior: %zu\n", STRS.offset);
+            ArenaRestoreToMarker(&STRS, cmark);
+            printf("offset after: %zu\n", STRS.offset);
+            emark = ArenaGetMarker(&arena);
+            printf("%zu\n", emark);
 
     ////////////////////
     // 2: Find an Entry
@@ -98,6 +108,7 @@ int main(void)
         } else if (choice == 3) {
 
             DumpHashCardDeck(cd);
+            DumpHashCardDeckInfo(cd);
 
     ////////////////////
     // 4: Lock Deck
@@ -142,12 +153,16 @@ int main(void)
             }
 
     ////////////////////
-    // 6: Generate Password
+    // 6: Delete an Entry 
     ////////////////////
         } else if (choice == 6) {
 
             size_t mark = ArenaGetMarker(&STRS);
-            uGeneratePassword(&STRS);
+            char* todelete = ArenaAlloc(&STRS, MAX_NICKNAME_LEN);
+            printf("Enter nickname of entry to delete: ");
+            scanf("%s", todelete);
+            int ret = DeleteHashCard(cd, todelete);
+            if (ret == 1) printf("NULLED [%s]\n", todelete);
             ArenaRestoreToMarker(&STRS, mark);
 
     ////////////////////
@@ -187,11 +202,12 @@ int main(void)
             ArenaRestoreToMarker(&STRS, mark);
 
     ////////////////////
-    // 9: Deck Info
+    // 9: Unload Deck 
     ////////////////////
         } else if (choice == 9) {
 
-            DumpHashCardDeckInfo(cd);
+            ArenaClear(&arena);
+            ArenaClear(&STRS);
 
     ////////////////////
     // 0: QUIT

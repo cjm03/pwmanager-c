@@ -23,6 +23,7 @@ typedef struct UserCard {   // storage.h
     char* username;
     char* password;
     struct UserCard* next;
+    int before;
 } UserCard;
 typedef struct CardDeck {   // storage.h
     int capacity;
@@ -88,6 +89,7 @@ void DumpHashCardDeck(CardDeck* cd);
 // print basic info found directly in CD's CardDeck struct
 void DumpHashCardDeckInfo(CardDeck* cd);
 UserCard* FindHashPassWithNickname(CardDeck* cd, char* nickname);
+int DeleteHashCard(CardDeck* cd, char* nickname);
 
 
 ///////////////
