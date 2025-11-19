@@ -16,18 +16,20 @@ static UserCard DELETEDCARD = { NULL, NULL, NULL, NULL };
 
 void DumpHashCardDeck(CardDeck* cd)
 {
-    printf("\n| %3s | %12s | %16s | %12s | %32s |\n", "IDX", "NICK", "SITE", "USER", "PASS");
-    printf("-------------------------------------------------------------------------------------------\n");
+    printf("\n| %3s | %12s | %20s | %16s | %32s |\n", "IDX", "NICK", "SITE", "USER", "PASS");
+    printf("|-----|--------------|----------------------|------------------|----------------------------------|\n");
     for (int i = 0; i < cd->capacity; i++) {
         UserCard* cur = cd->cards[i];
         if (cur != NULL) {
             // count++;
             int idx = GetSimpleHash(cur->service_nickname, cd->capacity, 0);
             if (idx == -1) continue;
-            printf("| %3d | %12s | %16s | %12s | %32s |\n", idx, cur->service_nickname, cur->service_website, cur->username, cur->password);
+            printf("| %3d | %12s | %20s | %16s | %32s |\n", idx, cur->service_nickname, cur->service_website, cur->username, cur->password);
         }
         // if (cd->count == count) return;
     }
+    DumpHashCardDeckInfo(cd);
+    printf("\n");
 }
 
 void DumpHashCardDeckInfo(CardDeck* cd)
@@ -47,15 +49,17 @@ int saveDeckToFile(CardDeck* cd, char* filename)
     for (int i = 0; i < cd->capacity; i++) {
         UserCard* cur = cd->cards[i];
         if (cur != NULL) {
-            cnt++;
-            fprintf(f, "\t%d {\n", i);
-            fprintf(f, "\t\t%s,\n", cur->service_nickname);
-            fprintf(f, "\t\t%s,\n", cur->service_website);
-            fprintf(f, "\t\t%s,\n", cur->username);
-            if (cnt == cd->count) {
-                fprintf(f, "\t\t%s\n\t}\n", cur->password);
-            } else {
-                fprintf(f, "\t\t%s\n\t},\n", cur->password);
+            if (cur != &DELETEDCARD) {
+                cnt++;
+                fprintf(f, "\t%d {\n", i);
+                fprintf(f, "\t\t%s,\n", cur->service_nickname);
+                fprintf(f, "\t\t%s,\n", cur->service_website);
+                fprintf(f, "\t\t%s,\n", cur->username);
+                if (cnt == cd->count) {
+                    fprintf(f, "\t\t%s\n\t}\n", cur->password);
+                } else {
+                    fprintf(f, "\t\t%s\n\t},\n", cur->password);
+                }
             }
         }
     }

@@ -40,7 +40,6 @@ int main(void)
     M_Arena STRS;
     ArenaInitSized(&STRS, Kilobytes(4));
     CardDeck* cd = CreateHashCardDeck();
-    int choice;
     char* key = malloc(64 * sizeof(char));
 
     printf("\033[1;32m   _____ _____ _____     _____ _ _ _ \033[0m\n");
@@ -51,61 +50,72 @@ int main(void)
     printf("No deck loaded. Initialize the key and begin adding entries or load a deck\n");
     printf("Initialize the master key (48-63 chars): ");
     scanf("%s", key);
-    printf("\n");
 
+    printf("\n===Options===\n");
+    printf("new - Add new entry\n");
+    printf("find <nickname> - Find a password\n");
+    printf("dump - Dump the entries\n");
+    printf("lock - Lock the deck\n");
+    printf("unlock - Unlock the deck\n");
+    printf("delete <nickname> - Delete an entry\n");
+    printf("save <filename> - Save the deck to a file\n");
+    printf("load <filename> - Load a deck from a file\n");
+    printf("unload - Unload a deck from Memory\n");
+    printf("help - Print this menu\n");
+    printf("exit - Quit\n\n");
 
     while (1) {
-        // char* command = GETSTRING();
-        printf("\n===Options===\n");
-        printf("1. Add new entry\n");
-        printf("2. Find a password\n");
-        printf("3. Dump the entries\n");
-        printf("4. Lock the deck\n");
-        printf("5. Unlock the deck\n");
-        printf("6. Delete an entry\n");
-        printf("7. Save the deck to a file\n");
-        printf("8. Load a deck from a file\n");
-        printf("9. Unload a deck from Memory\n");
-        printf("0. Quit\n\n");
         printf("> ");
-        scanf("%d", &choice);
+        char* command = GETSTRING();
 
     ////////////////////
     // 1: Add a New Entry
     ////////////////////
-        if (choice == 1) {
+        if (strncmp(command, "new", 3) == 0) {
 
             uAddNewUserEntry(cd);
 
     ////////////////////
     // 2: Find an Entry
     ////////////////////
-        } else if (choice == 2) {
+        } else if (strncmp(command, "find", 4) == 0) {
 
-            char* n = ArenaAlloc(&STRS, MAX_NICKNAME_LEN);                                // ALLOC: n
-            printf("Enter service nickname: ");
-            scanf("%s", n);
-            UserCard* uc = NULL;
-            uc = FindHashPassWithNickname(cd, n);
-            if (uc) {
-                printf("\033[1;32m\n%s\n\033[0m    \033[1;35mu: \033[1;91m%s\n\033[0m    \033[1;35mp: \033[1;91m%s\n\033[0m\n",
-                       n, uc->username, uc->password);
-            } else {
-                printf("Could not find an entry for %s\n", n);
+            if (strtok(command, " ") != NULL) {
+                char* nick = strtok(NULL, " ");
+                if (nick != NULL) {
+                    UserCard* uc = FindHashPassWithNickname(cd, nick);
+                        if (uc) {
+                            printf("\033[1;32m\n%s\n\033[0m    \033[1;35mu: \033[1;91m%s\n\033[0m    \033[1;35mp: \033[1;91m%s\n\033[0m\n",
+                                   nick, uc->username, uc->password);
+                        } else {
+                            printf("Could not find an entry for %s\n", nick);
+                        }
+                }
             }
+
+            // char* n = ArenaAlloc(&STRS, MAX_NICKNAME_LEN);                                // ALLOC: n
+            // printf("Enter service nickname: ");
+            // scanf("%s", n);
+            // UserCard* uc = NULL;
+            // uc = FindHashPassWithNickname(cd, n);
+            // if (uc) {
+            //     printf("\033[1;32m\n%s\n\033[0m    \033[1;35mu: \033[1;91m%s\n\033[0m    \033[1;35mp: \033[1;91m%s\n\033[0m\n",
+            //            n, uc->username, uc->password);
+            // } else {
+            //     printf("Could not find an entry for %s\n", n);
+            // }
 
     ////////////////////
     // 3: Dump Table Entries
     ////////////////////
-        } else if (choice == 3) {
+        } else if (strncmp(command, "dump", 4) == 0) {
 
             DumpHashCardDeck(cd);
-            DumpHashCardDeckInfo(cd);
 
     ////////////////////
     // 4: Lock Deck
     ////////////////////
-        } else if (choice == 4) {
+        } else if (strncmp(command, "lock", 4) == 0) {
 
             if (cd->locked == 1) {
                 printf("Shit already locked...?\n");
@@ -124,7 +134,7 @@ int main(void)
     ////////////////////
     // 5: Unlock Deck
     ////////////////////
-        } else if (choice == 5) {
+        } else if (strncmp(command, "unlock", 6) == 0) {
 
             if (cd->locked == 0) {
                 printf("Shit aint even locked...?\n");
@@ -143,67 +153,122 @@ int main(void)
     ////////////////////
     // 6: Delete an Entry 
     ////////////////////
-        } else if (choice == 6) {
+        } else if (strncmp(command, "delete", 6) == 0) {
 
-            char* todelete = ArenaAlloc(&STRS, MAX_NICKNAME_LEN);
-            printf("Enter nickname of entry to delete: ");
-            scanf("%s", todelete);
-            int ret = DeleteHashCard(cd, todelete);
-            if (ret == 1) printf("NULLED [%s]\n", todelete);
+            if (strtok(command, " ") != NULL) {
+                char* todelete = strtok(NULL, " ");
+                if (todelete != NULL) {
+                    int ret = DeleteHashCard(cd, todelete);
+                    if (ret == 1) printf("NULLED [%s]\n", todelete);
+                }
+            } else {
+                printf("error: delete requires the nickname to be deleted: delete <nickname>\n");
+            }
+
+            // char* todelete = ArenaAlloc(&STRS, MAX_NICKNAME_LEN);
+            // printf("Enter nickname of entry to delete: ");
+            // scanf("%s", todelete);
+            // int ret = DeleteHashCard(cd, todelete);
+            // if (ret == 1) printf("NULLED [%s]\n", todelete);
 
     ////////////////////
     // 7: Save Deck
     ////////////////////
-        } else if (choice == 7) {
+        } else if (strncmp(command, "save", 4) == 0) {
 
-            char* filename = ArenaAlloc(&STRS, 32);         // ALLOC: filename
-            printf("Enter name of file to save to: ");
-            scanf("%s", filename);
-            int ret = saveDeckToFile(cd, filename);
-            if (ret != 0) {
-                fprintf(stderr, "error saving to file");
-                break;
+            if (strtok(command, " ") != NULL) {
+                char* filename = strtok(NULL, " ");
+                if (filename != NULL) {
+                    int ret = saveDeckToFile(cd, filename);
+                    if (ret != 0) {
+                        printf("error saving to file %s\n", filename);
+                        break;
+                    }
+                }
             }
+
+            // char* filename = ArenaAlloc(&STRS, 32);         // ALLOC: filename
+            // printf("Enter name of file to save to: ");
+            // scanf("%s", filename);
+            // int ret = saveDeckToFile(cd, filename);
+            // if (ret != 0) {
+            //     fprintf(stderr, "error saving to file");
+            //     break;
+            // }
 
     ////////////////////
     // 8: Load Deck
     ////////////////////
-        } else if (choice == 8) {
+        } else if (strncmp(command, "load", 4) == 0) {
             
-            char* filename = ArenaAlloc(&STRS, 32);         // ALLOC: filename
-            printf("Enter name of file to read from: ");
-            scanf("%s", filename);
-            int ret = readDeckFromFile(cd, filename);
-            if (ret == -1) {
-                fprintf(stderr, "error reading from file");
-                break;
+            if (strtok(command, " ") != NULL) {
+                char* filename = strtok(NULL, " ");
+                if (filename != NULL) {
+                    int ret = readDeckFromFile(cd, filename);
+                    if (ret == -1) {
+                        printf("error reading from file %s\n", filename);
+                        break;
+                    }
+                    if (cd->locked == 1) {
+                        printf("loaded deck from %s\n", filename);
+                        printf("WARNING: DECK IS LOCKED & ENCRYPTED\n");
+                    } else {
+                        printf("loaded deck from %s\n", filename);
+                    }
+                }
             }
-            if (cd->locked == 1) {
-                printf("loaded deck from %s\n", filename);
-                printf("WARNING: DECK IS LOCKED & ENCRYPTED\n");
-            } else {
-                printf("loaded deck from %s\n", filename);
-            }
+            // char* filename = ArenaAlloc(&STRS, 32);         // ALLOC: filename
+            // printf("Enter name of file to read from: ");
+            // scanf("%s", filename);
+            // int ret = readDeckFromFile(cd, filename);
+            // if (ret == -1) {
+            //     fprintf(stderr, "error reading from file");
+            //     break;
+            // }
+            // if (cd->locked == 1) {
+            //     printf("loaded deck from %s\n", filename);
+            //     printf("WARNING: DECK IS LOCKED & ENCRYPTED\n");
+            // } else {
+            //     printf("loaded deck from %s\n", filename);
+            // }
 
     ////////////////////
     // 9: Unload Deck 
     ////////////////////
-        } else if (choice == 9) {
+        } else if (strncmp(command, "unload", 6) == 0) {
 
             ArenaClear(&STRS);
+
+        } else if (strncmp(command, "help", 4) == 0) {
+
+            printf("\n===Options===\n");
+            printf("new - Add new entry\n");
+            printf("find <nickname> - Find a password\n");
+            printf("dump - Dump the entries\n");
+            printf("lock - Lock the deck\n");
+            printf("unlock - Unlock the deck\n");
+            printf("delete <nickname> - Delete an entry\n");
+            printf("save <filename> - Save the deck to a file\n");
+            printf("load <filename> - Load a deck from a file\n");
+            printf("unload - Unload a deck from Memory\n");
+            printf("help - Print this menu\n");
+            printf("exit - Quit\n\n");
 
     ////////////////////
     // 0: QUIT
     ////////////////////
-        } else if (choice == 0) {
+        } else if (strncmp(command, "exit", 4) == 0) {
 
             printf("BYE!\n");
+            free(command);
             break;
 
-        } else {
-            printf("unsupported, I suggest reading the options\n");
-            break;
         }
+        free(command);
+        // } else {
+        //     printf("unsupported, I suggest reading the options\n");
+        //     break;
+
     }
     FreeHashDeck(cd);
     free(key);
